@@ -1,0 +1,96 @@
+- name: Install app
+  block:
+    # - name: i force a failure
+    #   command: /bin/false
+
+    - name: create parent deploy dir
+      ansible.builtin.file:
+        path: "{{ deploy_dir }}"
+        state: directory
+        mode: "0755"
+
+    - name: Check if release_dir exists
+      stat:
+        path: "{{ release_dir }}"
+      register: release_dir_check
+
+    - name: remove release dir if exists
+      ansible.builtin.file:
+        path: "{{ release_dir }}"
+        state: absent
+      when: release_dir_check.stat.exists
+
+    - name: create release dir
+      ansible.builtin.file:
+        path: "{{ release_dir }}"
+        state: directory
+        mode: "0755"
+
+    - name: clone github repository
+      ansible.builtin.git:
+        repo: "{{ repository_url }}"
+        dest: "{{ release_dir }}"
+        single_branch: yes
+        version: "{{ repository_branch }}"
+
+    - ansible.builtin.set_fact: install_done=true
+
+    - debug:
+        msg: "Hier"
+      when: install_done
+
+    - name: remove dev files
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: absent
+      with_items:
+        - "{{ release_dir }}/.git"
+        - "{{ release_dir }}/.gitignore"
+        - "{{ release_dir }}/.github"
+        - "{{ release_dir }}/.php-cs-fixer.php"
+        - "{{ release_dir }}/.phpstan.neon"
+
+    - name: Link shared files
+      ansible.builtin.file:
+        src: "{{ shared_dir }}/{{ item }}"
+        dest: "{{ release_dir }}/{{ item }}"
+        state: link
+        force: true
+      loop: "{{ shared_files_and_dirs }}"
+
+    - name: Download and installs all libs and dependencies
+      community.general.composer:
+        command: install
+        working_dir: "{{ release_dir }}"
+        executable: "/usr/local/php83/bin/php"
+        arguments: "{{ composer_install_flags }}"
+
+    - name: run 'before optimizing' scripts
+      ansible.builtin.shell:
+        chdir: "{{ release_dir }}"
+        cmd: "{{ item }}"
+      when: commands_before_optimizing is defined and commands_before_optimizing!=None
+      with_items: "{{ commands_before_optimizing | default([]) }}"
+
+    - name: Warmup cache
+      ansible.builtin.shell:
+        chdir: "{{ release_dir }}"
+        cmd: "{{ console_bin }} cache:warmup"
+
+    - name: Publish app
+      ansible.builtin.file:
+        src: "{{ release_dir }}"
+        dest: "{{ current_dir }}"
+        state: link
+        force: true
+
+    - name: run 'before finishing deploy' scripts
+      ansible.builtin.shell:
+        chdir: "{{ release_dir }}"
+        cmd: "{{ item }}"
+      when: commands_before_finishing_deploy is defined and commands_before_finishing_deploy!=None
+      with_items: "{{ commands_before_finishing_deploy | default([]) }}"
+
+  rescue:
+    - debug:
+        msg: 'Error in "{{ ansible_failed_task.name }}" - installation rollbacked.'

@@ -1,0 +1,8 @@
+ansible_host_key_checking: "accept-new"
+ansible_python_interpreter: "auto_silent"
+#    release_dir: "{{ deploy_dir }}/releases/{{ now(utc=false,fmt='%Y%m%d_%H%M') }}"
+release_dir: "{{ deploy_dir }}/releases/test1"
+shared_dir: "{{ deploy_dir }}/shared"
+current_dir: "{{ deploy_dir }}/current"
+console_bin: "cd {{ release_dir }}; {{ remote_php_binary_path }} bin/console"
+install_done: false

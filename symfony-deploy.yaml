@@ -1,0 +1,5 @@
+- name: Install symfony app
+  gather_facts: false
+  hosts: servers
+  roles: 
+    - symfony-deploy
