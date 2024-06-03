@@ -1,3 +1,5 @@
+deploy_dir: '.'
+remote_php_binary_path:
 repository_branch: 'main'
 composer_install_flags: '--prefer-dist --no-interaction --no-dev'
 shared_files_and_dirs: []
