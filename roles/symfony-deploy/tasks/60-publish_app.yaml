@@ -1,0 +1,13 @@
+# install the app (create softlink)
+- name: Publish app
+  ansible.builtin.file:
+    src: "{{ sv_syd_release_dir }}"
+    dest: "{{ sv_syd_current_dir }}"
+    state: link
+    force: true
+
+- ansible.builtin.set_fact: install_done=true
+
+- debug:
+    msg: "Hier"
+  when: install_done

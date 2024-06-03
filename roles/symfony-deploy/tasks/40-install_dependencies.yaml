@@ -2,12 +2,12 @@
 - name: Download and install all libs and dependencies
   community.general.composer:
     command: install
-    working_dir: "{{ release_dir }}"
-    executable: "{{ remote_php_binary_path }}"
-    arguments: "{{ composer_install_flags }}"
+    working_dir: "{{ sv_syd_release_dir }}"
+    executable: "{{ sv_syd_php_binary_path }}"
+    arguments: "{{ sv_syd_composer_install_flags }}"
 
 - name: compile asset map
   ansible.builtin.shell:
-    chdir: "{{ release_dir }}"
-    cmd: "{{ console_bin }} asset-map:compile"
-  when: compile_asset_map
+    chdir: "{{ sv_syd_release_dir }}"
+    cmd: "{{ sv_syd_console_bin }} asset-map:compile"
+  when: sv_syd_compile_asset_map

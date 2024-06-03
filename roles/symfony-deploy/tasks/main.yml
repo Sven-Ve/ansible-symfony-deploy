@@ -3,44 +3,44 @@
     # - name: i force a failure
     #   command: /bin/false
 
-#    - include_tasks: 10-setup.yml
-#    - include_tasks: 20-update-code.yml
-#    - include_tasks: 30-shared-files.yml
-    - include_tasks: 40-install_dependencies.yaml
+    - include_tasks: 10-setup.yml
+      name: "Setup directories"
 
-    - name: run 'before optimizing' scripts
-      ansible.builtin.shell:
-        chdir: "{{ release_dir }}"
-        cmd: "{{ item }}"
-      when: commands_before_optimizing is defined and commands_before_optimizing!=None
-      with_items: "{{ commands_before_optimizing | default([]) }}"
+    - include_tasks: 20-update-code.yml
+      name: "Update code"
+
+    - include_tasks: 30-shared-files.yml
+      name: "Handle shared files and directories"
+
+    - include_tasks: 40-install_dependencies.yaml
+      name: "Install dependencies"
+
+    - include_tasks: 50-optimize.yaml
+      name: "Optimize App"
+
+    - include_tasks: 60-publish_app.yaml
+      name: "Publish App"
+
+    - include_tasks: 90-cleanup.yaml
+      name: "Cleanup"
+      when: sv_syd_keep_releases | int > 0
 
     - meta: end_play
 
-    - name: Warmup cache
+
+    - name: run 'before optimizing' scripts
       ansible.builtin.shell:
-        chdir: "{{ release_dir }}"
-        cmd: "{{ console_bin }} cache:warmup"
-
-    - name: Publish app
-      ansible.builtin.file:
-        src: "{{ release_dir }}"
-        dest: "{{ current_dir }}"
-        state: link
-        force: true
-
-    - ansible.builtin.set_fact: install_done=true
-
-    - debug:
-        msg: "Hier"
-      when: install_done
+        chdir: "{{ sv_syd_release_dir }}"
+        cmd: "{{ item }}"
+      when: sv_syd_commands_before_optimizing is defined and sv_syd_commands_before_optimizing!=None
+      with_items: "{{ sv_syd_commands_before_optimizing | default([]) }}"
 
     - name: run 'before finishing deploy' scripts
       ansible.builtin.shell:
-        chdir: "{{ release_dir }}"
+        chdir: "{{ sv_syd_release_dir }}"
         cmd: "{{ item }}"
-      when: commands_before_finishing_deploy is defined and commands_before_finishing_deploy!=None
-      with_items: "{{ commands_before_finishing_deploy | default([]) }}"
+      when: sv_syd_commands_before_finishing_deploy is defined and sv_syd_commands_before_finishing_deploy!=None
+      with_items: "{{ sv_syd_commands_before_finishing_deploy | default([]) }}"
 
   rescue:
     - debug:

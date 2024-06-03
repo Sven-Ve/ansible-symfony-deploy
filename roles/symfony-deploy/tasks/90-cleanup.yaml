@@ -1,0 +1,12 @@
+# delete old releases
+- name: search old releases
+  shell: ls -1dt {{ sv_syd_releases_dir }}/* | tail -n +{{ sv_syd_keep_releases | int + 1 }}
+  when: sv_syd_keep_releases | int > 0
+  register: sv_syd_old_releases
+
+- name: remove {{ sv_syd_old_releases.stdout_lines | length }} old release(s)
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: absent
+  loop: "{{ sv_syd_old_releases.stdout_lines }}"
+  when: (sv_syd_keep_releases | int > 0) and (sv_syd_old_releases.stdout_lines | length > 0)

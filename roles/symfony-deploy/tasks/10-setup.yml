@@ -1,23 +1,60 @@
+- name: get release version
+  set_fact:
+    sv_syd_release_version: "{{ lookup('pipe', 'date +%Y%m%d_%H%M%S') }}"
+  run_once: true
+  delegate_to: 127.0.0.1
+
+- name: set release path
+  set_fact:
+    sv_syd_release_dir: "{{ sv_syd_releases_dir }}/{{ sv_syd_release_version }}"
+  run_once: true
+  delegate_to: 127.0.0.1
+  when: sv_syd_release_dir is not defined
+
 # Setup folders
 - name: create parent deploy dir
   ansible.builtin.file:
-    path: "{{ deploy_dir }}"
+    path: "{{ sv_syd_deploy_dir }}"
     state: directory
     mode: "0755"
 
-- name: Check if release_dir exists
+- name: Check if sv_syd_release_dir exists
   stat:
-    path: "{{ release_dir }}"
-  register: release_dir_check
+    path: "{{ sv_syd_release_dir }}"
+  register: sv_syd_release_dir_check
 
 - name: remove release dir if exists
   ansible.builtin.file:
-    path: "{{ release_dir }}"
+    path: "{{ sv_syd_release_dir }}"
     state: absent
-  when: release_dir_check.stat.exists
+  when: sv_syd_release_dir_check.stat.exists
 
 - name: create release dir
   ansible.builtin.file:
-    path: "{{ release_dir }}"
+    path: "{{ sv_syd_release_dir }}"
     state: directory
     mode: "0755"
+
+- name: create shared dir
+  ansible.builtin.file:
+    path: "{{ sv_syd_shared_dir }}"
+    state: directory
+    mode: "0755"
+
+- name: ensure shared paths exists
+  file:
+    state: directory
+    path: "{{ sv_syd_shared_dir }}/{{ item }}"
+  with_items: "{{ sv_syd_shared_dirs }}"
+
+- name: ensure basedir shared files exists
+  file:
+    state: directory
+    path: "{{ sv_syd_shared_dir }}/{{ item | dirname }}"
+  with_items: "{{ sv_syd_shared_files }}"
+
+- name: ensure shared files exists
+  file:
+    state: touch
+    path: "{{ sv_syd_shared_dir }}/{{ item }}"
+  with_items: "{{ sv_syd_shared_files }}"

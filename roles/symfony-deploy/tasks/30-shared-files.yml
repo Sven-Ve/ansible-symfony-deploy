@@ -1,8 +1,8 @@
 # handle shared files and folders
-- name: Link shared files
+- name: Link shared files and directories
   ansible.builtin.file:
-    src: "{{ shared_dir }}/{{ item }}"
-    dest: "{{ release_dir }}/{{ item }}"
+    src: "{{ sv_syd_shared_dir }}/{{ item }}"
+    dest: "{{ sv_syd_release_dir }}/{{ item }}"
     state: link
     force: true
-  loop: "{{ shared_files_and_dirs | flatten }}"
+  loop: "{{ (sv_syd_shared_files | flatten) + (sv_syd_shared_dirs | flatten) }}"

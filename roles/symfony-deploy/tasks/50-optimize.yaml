@@ -1,0 +1,4 @@
+- name: Warmup cache
+  ansible.builtin.shell:
+    chdir: "{{ sv_syd_release_dir }}"
+    cmd: "{{ sv_syd_console_bin }} cache:warmup"

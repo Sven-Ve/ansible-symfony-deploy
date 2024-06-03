@@ -1,13 +1,13 @@
 # get code via githup, clean it
 - name: clone github repository
   ansible.builtin.git:
-    repo: "{{ repository_url }}"
-    dest: "{{ release_dir }}"
+    repo: "{{ sv_syd_git_repository_url }}"
+    dest: "{{ sv_syd_release_dir }}"
     accept_hostkey: true
     single_branch: true
     force: true
     depth: 1
-    version: "{{ repository_branch }}"
+    version: "{{ sv_syd_git_repository_branch }}"
 #  register: git_result
 
 - name: cleanup dev files
@@ -15,8 +15,8 @@
     path: "{{ item }}"
     state: absent
   with_items:
-    - "{{ release_dir }}/.git"
-    - "{{ release_dir }}/.gitignore"
-    - "{{ release_dir }}/.github"
-    - "{{ release_dir }}/.php-cs-fixer.php"
-    - "{{ release_dir }}/.phpstan.neon"
+    - "{{ sv_syd_release_dir }}/.git"
+    - "{{ sv_syd_release_dir }}/.gitignore"
+    - "{{ sv_syd_release_dir }}/.github"
+    - "{{ sv_syd_release_dir }}/.php-cs-fixer.php"
+    - "{{ sv_syd_release_dir }}/.phpstan.neon"

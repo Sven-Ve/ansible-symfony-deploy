@@ -1,8 +1,10 @@
-deploy_dir: '.'
-remote_php_binary_path:
-repository_branch: 'main'
-composer_install_flags: '--prefer-dist --no-interaction --no-dev'
-shared_files_and_dirs: []
-compile_asset_map: false
-commands_before_optimizing: []
-commands_before_finishing_deploy:
+sv_syd_deploy_dir: '.'
+sv_syd_php_binary_path:
+sv_syd_git_repository_branch: 'main'
+sv_syd_composer_install_flags: '--prefer-dist --no-interaction --no-dev'
+sv_syd_shared_files: []
+sv_syd_shared_dirs: []
+sv_syd_compile_asset_map: false
+sv_syd_commands_before_optimizing: []
+sv_syd_commands_before_finishing_deploy:
+sv_syd_keep_releases: 0
