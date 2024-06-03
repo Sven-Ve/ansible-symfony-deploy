@@ -1,0 +1,13 @@
+# Install all dependencies via composer
+- name: Download and install all libs and dependencies
+  community.general.composer:
+    command: install
+    working_dir: "{{ release_dir }}"
+    executable: "{{ remote_php_binary_path }}"
+    arguments: "{{ composer_install_flags }}"
+
+- name: compile asset map
+  ansible.builtin.shell:
+    chdir: "{{ release_dir }}"
+    cmd: "{{ console_bin }} asset-map:compile"
+  when: compile_asset_map

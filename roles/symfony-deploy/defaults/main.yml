@@ -3,5 +3,6 @@ remote_php_binary_path:
 repository_branch: 'main'
 composer_install_flags: '--prefer-dist --no-interaction --no-dev'
 shared_files_and_dirs: []
+compile_asset_map: false
 commands_before_optimizing: []
 commands_before_finishing_deploy:
