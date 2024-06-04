@@ -6,8 +6,6 @@
     state: link
     force: true
 
-- ansible.builtin.set_fact: install_done=true
+- name: Set install to done (only cleanup jobs remaining, errors don't execute a rollback)
+  ansible.builtin.set_fact: sv_syd_install_done=true
 
-- debug:
-    msg: "Hier"
-  when: install_done

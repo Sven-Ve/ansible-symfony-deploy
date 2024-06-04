@@ -5,4 +5,4 @@ sv_syd_releases_dir: "{{ sv_syd_deploy_dir }}/releases"
 sv_syd_shared_dir: "{{ sv_syd_deploy_dir }}/shared"
 sv_syd_current_dir: "{{ sv_syd_deploy_dir }}/current"
 sv_syd_console_bin: "cd {{ sv_syd_release_dir }}; {{ sv_syd_php_binary_path }} bin/console"
-install_done: false
+sv_syd_install_done: false

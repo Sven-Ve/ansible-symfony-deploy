@@ -15,25 +15,18 @@
     - include_tasks: 40-install_dependencies.yaml
       name: "Install dependencies"
 
-    - include_tasks: 50-optimize.yaml
-      name: "Optimize App"
-
-    - include_tasks: 60-publish_app.yaml
-      name: "Publish App"
-
-    - include_tasks: 90-cleanup.yaml
-      name: "Cleanup"
-      when: sv_syd_keep_releases | int > 0
-
-    - meta: end_play
-
-
     - name: run 'before optimizing' scripts
       ansible.builtin.shell:
         chdir: "{{ sv_syd_release_dir }}"
         cmd: "{{ item }}"
       when: sv_syd_commands_before_optimizing is defined and sv_syd_commands_before_optimizing!=None
       with_items: "{{ sv_syd_commands_before_optimizing | default([]) }}"
+
+    - include_tasks: 50-optimize.yaml
+      name: "Optimize App"
+
+    - include_tasks: 60-publish_app.yaml
+      name: "Publish App"
 
     - name: run 'before finishing deploy' scripts
       ansible.builtin.shell:
@@ -42,6 +35,11 @@
       when: sv_syd_commands_before_finishing_deploy is defined and sv_syd_commands_before_finishing_deploy!=None
       with_items: "{{ sv_syd_commands_before_finishing_deploy | default([]) }}"
 
+    - include_tasks: 90-cleanup.yaml
+      name: "Cleanup"
+      when: sv_syd_keep_releases | int > 0
+
   rescue:
     - debug:
-        msg: 'Error in "{{ ansible_failed_task.name }}" - installation rollbacked.'
+        msg: 'Error in "{{ ansible_failed_task.name }}" - but installation is done. Please check cleanup tasks.'
+      when: sv_syd_install_done
