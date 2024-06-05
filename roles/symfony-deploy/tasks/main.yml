@@ -1,8 +1,5 @@
 - name: Install app
   block:
-    # - name: i force a failure
-    #   command: /bin/false
-
     - include_tasks: 10-setup.yml
       name: "Setup directories"
 
@@ -40,6 +37,17 @@
       when: sv_syd_keep_releases | int > 0
 
   rescue:
-    - debug:
+    - name: Deployment warning
+      ansible.builtin.debug:
         msg: 'Error in "{{ ansible_failed_task.name }}" - but installation is done. Please check cleanup tasks.'
       when: sv_syd_install_done
+
+    - name: Deployment error!
+      ansible.builtin.debug:
+        msg: "Error in '{{ ansible_failed_task.name }}' - installation isn't done. Please check and delete release dir {{sv_syd_release_dir | d('')}}!"
+      when: not sv_syd_install_done
+
+    - name: Deployment failed.
+      ansible.builtin.fail:
+        msg: Please check the error messages above.
+      when: not sv_syd_install_done
