@@ -20,3 +20,6 @@
     - "{{ sv_syd_release_dir }}/.github"
     - "{{ sv_syd_release_dir }}/.php-cs-fixer.php"
     - "{{ sv_syd_release_dir }}/.phpstan.neon"
+    - "{{ sv_syd_release_dir }}/.env.test"
+    - "{{ sv_syd_release_dir }}/.idea"
+    - "{{ sv_syd_release_dir }}/inventory.yaml"
